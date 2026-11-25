@@ -1,6 +1,6 @@
 ---
 title: "Atividade Avaliativa - Estatística Descritiva no R"
-author: "Tiago Henrique Silva Fabrini e grupo (5 integrantes)"
+author: "Tiago, Paulo, Gabriel, Matheus e Nicollas"
 date: "25 de novembro de 2026"
 output: pdf_document
 ---
