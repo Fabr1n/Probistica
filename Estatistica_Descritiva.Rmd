@@ -3,115 +3,139 @@ title: "Atividade Avaliativa - Estatística Descritiva no R"
 author: "Tiago Henrique Silva Fabrini - Matrícula 202604085"
 date: "25 de novembro de 2026"
 output: pdf_document
-lang: pt-BR
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-options(OutDec = ",", scipen = 999)
-
-dados <- read.table("dados-bussab.txt", header = FALSE, stringsAsFactors = FALSE)
-names(dados) <- c("funcionario", "estado_civil", "grau_instrucao", "filhos",
-                  "salario", "idade_anos", "idade_meses", "regiao")
-dados$grau_instrucao <- factor(dados$grau_instrucao,
-                               levels = c("1oGrau", "2oGrau", "Superior"))
-```
 
 # Questão 6 - Variabilidade dos salários
 
-Os salários estão expressos em salários mínimos. Para a variância e o desvio-padrão, usa-se a fórmula amostral (denominador `n - 1`), conforme as funções `var()` e `sd()` do R. Os quartis são obtidos pelo método padrão de `quantile()` (`type = 7`).
-
-```{r q6-calculos}
-salario <- dados$salario
-n <- length(salario)
-amplitude <- diff(range(salario))
-variancia_amostral <- var(salario)
-desvio_padrao_amostral <- sd(salario)
-coeficiente_variacao <- 100 * desvio_padrao_amostral / mean(salario)
-quartis <- quantile(salario, c(0.25, 0.75), type = 7)
-AIQ <- unname(quartis[2] - quartis[1])
-limite_inferior <- unname(quartis[1] - 1.5 * AIQ)
-limite_superior <- unname(quartis[2] + 1.5 * AIQ)
-outliers <- salario[salario < limite_inferior | salario > limite_superior]
-
-resultado_q6 <- data.frame(
-  Medida = c("Número de observações", "Mínimo", "Máximo", "Amplitude",
-             "Variância amostral", "Desvio-padrão amostral",
-             "Coeficiente de variação (%)", "Q1", "Q3",
-             "Intervalo interquartílico", "Limite inferior (1,5 AIQ)",
-             "Limite superior (1,5 AIQ)"),
-  Resultado = c(n, min(salario), max(salario), amplitude,
-                variancia_amostral, desvio_padrao_amostral,
-                coeficiente_variacao, quartis[1], quartis[2], AIQ,
-                limite_inferior, limite_superior)
-)
-knitr::kable(resultado_q6, digits = 4,
-             caption = "Medidas de dispersão e limites para identificação de outliers")
+```{r}
+# Importando os dados
+dados <- read.table("dados-bussab.txt", header = FALSE)
+names(dados) <- c("funcionario", "estado_civil", "grau_instrucao", "filhos",
+                  "salario", "idade_anos", "idade_meses", "regiao")
+dados$grau_instrucao <- as.factor(dados$grau_instrucao)
 ```
 
-```{r q6-outliers}
-if (length(outliers) == 0) {
-  cat("Nenhum salário foi identificado como outlier pelo critério de 1,5 AIQ.\n")
-} else {
-  cat("Salários identificados como outliers:", paste(outliers, collapse = ", "), "\n")
-}
+### a) Amplitude, variância, desvio-padrão e coeficiente de variação
+
+```{r}
+# Amplitude
+amplitude <- max(dados$salario) - min(dados$salario)
+amplitude
+
+# Variância amostral
+variancia <- var(dados$salario)
+variancia
+
+# Desvio-padrão amostral
+desvio_padrao <- sd(dados$salario)
+desvio_padrao
+
+# Coeficiente de variação
+cv <- desvio_padrao / mean(dados$salario) * 100
+cv
 ```
 
-```{r q6-boxplot, fig.width=7, fig.height=4.5, fig.cap="Boxplot dos salários dos 36 funcionários."}
-boxplot(salario, horizontal = TRUE, col = "#75AADB",
-        main = "Distribuição dos salários",
-        xlab = "Salário (em salários mínimos)")
+### b) Intervalo interquartílico
+
+```{r}
+# Quartis
+quartis <- quantile(dados$salario)
+quartis
+
+# Intervalo interquartílico
+AIQ <- quartis[4] - quartis[2]
+AIQ
 ```
 
-**Interpretação.** A amplitude é de `r format(amplitude, nsmall = 2)` salários mínimos, entre `r format(min(salario), nsmall = 2)` e `r format(max(salario), nsmall = 2)`. O desvio-padrão amostral é `r format(desvio_padrao_amostral, nsmall = 2)` e o coeficiente de variação é `r format(coeficiente_variacao, nsmall = 2)`%, indicando dispersão expressiva em relação à média. O intervalo interquartílico é `r format(AIQ, nsmall = 2)`: metade central dos salários está entre Q1 = `r format(quartis[1], nsmall = 2)` e Q3 = `r format(quartis[2], nsmall = 2)`. As cercas do critério de 1,5 AIQ são `r format(limite_inferior, nsmall = 2)` e `r format(limite_superior, nsmall = 2)` salários mínimos; nenhum valor fica fora delas. Isso é compatível com o boxplot, que não sinaliza observações atípicas por esse critério. A ausência de outliers não significa ausência de variação: há diferenças consideráveis entre os salários observados.
+### c) Outliers pelo critério de 1,5 vez o intervalo interquartílico
+
+```{r}
+limite_inferior <- quartis[2] - 1.5 * AIQ
+limite_superior <- quartis[4] + 1.5 * AIQ
+limite_inferior
+limite_superior
+
+outliers <- dados$salario[dados$salario < limite_inferior |
+                          dados$salario > limite_superior]
+outliers
+```
+
+Não há salários fora dos limites calculados, portanto não foram identificados outliers por esse critério.
+
+### d) Comparação com o boxplot
+
+```{r}
+# Boxplot dos salários
+boxplot(dados$salario, main = "Boxplot dos salários",
+        ylab = "Salário (em salários mínimos)", col = "red")
+```
+
+O boxplot também não mostra pontos fora dos limites. A amplitude dos salários é 19,30 salários mínimos e o intervalo interquartílico é 6,51. Assim, mesmo sem outliers pelo critério, há variação entre os salários.
+
+### e) Interpretação da variabilidade salarial
+
+O desvio-padrão é 4,59 salários mínimos e o coeficiente de variação é 41,25%. Isso mostra que os salários variam bastante em relação à média. A metade central dos valores está entre 7,55 e 14,06 salários mínimos.
 
 # Questão 8 - Salários por grau de instrução
 
-Calculam-se as medidas separadamente para cada categoria de grau de instrução. O desvio-padrão é amostral e representa a dispersão absoluta dos salários dentro de cada grupo.
+### a) Média, mediana e desvio-padrão por grau de instrução
 
-```{r q8-tabela}
-grupos <- split(dados$salario, dados$grau_instrucao, drop = TRUE)
-resumo_q8 <- do.call(rbind, lapply(names(grupos), function(grau) {
-  x <- grupos[[grau]]
-  data.frame(
-    `Grau de instrução` = grau,
-    n = length(x),
-    `Média` = mean(x),
-    `Mediana` = median(x),
-    `Desvio-padrão amostral` = sd(x),
-    check.names = FALSE
-  )
-}))
-rownames(resumo_q8) <- NULL
-knitr::kable(resumo_q8, digits = 2,
-             caption = "Resumo dos salários por grau de instrução (salários mínimos)")
+```{r}
+# Média dos salários por grau de instrução
+media <- aggregate(salario ~ grau_instrucao, data = dados, mean)
 
-grupo_maior_media <- resumo_q8[[1]][which.max(resumo_q8[["Média"]])]
-grupo_maior_dp <- resumo_q8[[1]][which.max(resumo_q8[["Desvio-padrão amostral"]])]
+# Mediana dos salários por grau de instrução
+mediana <- aggregate(salario ~ grau_instrucao, data = dados, median)
+
+# Desvio-padrão dos salários por grau de instrução
+desvio <- aggregate(salario ~ grau_instrucao, data = dados, sd)
 ```
 
-**Comparação.** O grupo com maior média salarial é **`r grupo_maior_media`**; o grupo com maior dispersão absoluta, medida pelo desvio-padrão, é **`r grupo_maior_dp`**. As médias e medianas ajudam a comparar a posição dos salários, enquanto os desvios-padrão indicam o quanto os valores variam dentro de cada grupo. O gráfico abaixo permite comparar visualmente medianas, amplitudes interquartílicas, extensão dos valores e possíveis observações atípicas por grau de instrução.
+### b) Tabela comparativa
 
-```{r q8-boxplot, fig.width=7, fig.height=4.8, fig.cap="Distribuição dos salários por grau de instrução."}
+```{r}
+tabela <- data.frame(
+  Grau_de_instrucao = media$grau_instrucao,
+  Media = round(media$salario, 2),
+  Mediana = round(mediana$salario, 2),
+  Desvio_padrao = round(desvio$salario, 2)
+)
+tabela
+```
+
+### c) Grupos com maior média e maior dispersão
+
+```{r}
+tabela$Grau_de_instrucao[which.max(tabela$Media)]
+tabela$Grau_de_instrucao[which.max(tabela$Desvio_padrao)]
+```
+
+O grupo com ensino superior tem a maior média salarial. Esse grupo também tem o maior desvio-padrão.
+
+### d) Comparação com os boxplots
+
+```{r}
+# Boxplot dos salários por grau de instrução
 boxplot(salario ~ grau_instrucao, data = dados,
-        col = c("#A8DADC", "#75AADB", "#F4A261"),
         main = "Salários por grau de instrução",
         xlab = "Grau de instrução",
-        ylab = "Salário (em salários mínimos)")
+        ylab = "Salário (em salários mínimos)",
+        col = c("lightblue", "lightgreen", "pink"))
 ```
 
-**Conclusão (12 linhas).**
+As médias e medianas seguem uma ordem parecida entre os grupos: os valores são menores no grupo com 1º grau e maiores no grupo com ensino superior. O boxplot mostra também a variação dos salários dentro de cada grupo.
 
-Na amostra de 36 funcionários, os salários variam de 4,00 a 23,30 salários mínimos.  
-A média geral é 11,12 salários mínimos, enquanto a mediana é 10,17.  
-A média acima da mediana indica influência de salários mais altos na distribuição.  
-No grupo com 1º grau, a média é 7,84 e a mediana é 7,13 salários mínimos.  
-No grupo com 2º grau, a média é 11,53 e a mediana é 10,91.  
-No grupo com ensino superior, a média é 16,48 e a mediana é 16,74.  
-Assim, nesta amostra, o grupo com ensino superior apresenta a maior média.  
-O grupo com 1º grau tem os menores valores de média e mediana entre os três grupos.  
-O maior desvio-padrão é o do grupo com ensino superior, cerca de 4,50 salários mínimos.  
-O boxplot permite observar a posição central e a variação dos salários em cada grupo.  
-Essas diferenças descrevem associações observadas e não demonstram que a escolaridade cause salários maiores.  
-Para decisões de gestão, os resultados podem orientar perguntas sobre remuneração e composição dos grupos, considerando também outros fatores e as limitações desta amostra.
+### e) Conclusão
 
+Foram analisados os salários de 36 funcionários.\
+Os valores vão de 4,00 a 23,30 salários mínimos.\
+A média geral é 11,12 e a mediana é 10,17 salários mínimos.\
+No grupo com 1º grau, a média é 7,84 e a mediana é 7,13.\
+No grupo com 2º grau, a média é 11,53 e a mediana é 10,91.\
+No grupo com ensino superior, a média é 16,48 e a mediana é 16,74.\
+O grupo com ensino superior apresenta a maior média.\
+O desvio-padrão também é maior nesse grupo, cerca de 4,50 salários mínimos.\
+Os boxplots ajudam a comparar a mediana e a variação dos salários dos grupos.\
+Esses resultados descrevem os funcionários desta base.\
+Eles não permitem afirmar que o grau de instrução seja a causa das diferenças salariais.\
+Na gestão de pessoas, a comparação pode ajudar a observar como os salários estão distribuídos entre os níveis de instrução.
