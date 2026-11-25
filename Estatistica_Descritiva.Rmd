@@ -7,11 +7,11 @@ output: pdf_document
 
 ## Integrantes do grupo
 
-1. Tiago Henrique Silva Fabrini - Matrícula: 202604085
-2. Nome: ______________________________ - Matrícula: ______________
-3. Nome: ______________________________ - Matrícula: ______________
-4. Nome: ______________________________ - Matrícula: ______________
-5. Nome: ______________________________ - Matrícula: ______________
+1. Tiago Henrique Silva Fabrini - Curso: Engenharia de Software - Matrícula: 202604085
+2. Nicollas Samuel Martins de Martino - Curso: Engenharia de Software - Matrícula: 202604082
+3. Paulo Cesar Martins dos Santos - Curso: Engenharia de Software - Matrícula: 202406174
+4. Gabriel Alves Martins - Curso: Engenharia de Software - Matrícula: 202604072
+5. Matheus Marquez de Carvalho Rodrigues - Curso: Engenharia de Software - Matrícula: 202604079
 
 # Questão 6 - Variabilidade dos salários
 
