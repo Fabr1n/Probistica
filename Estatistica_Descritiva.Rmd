@@ -176,7 +176,7 @@ As médias e medianas seguem uma ordem parecida entre os grupos: os valores são
 Foram analisados os salários de 36 funcionários.\
 Os valores vão de 4,00 a 23,30 salários mínimos.\
 A média geral é 11,12 e a mediana é 10,17 salários mínimos.\
-No grupo com 1º grau, a média é 7,84 e a mediana é 7,13.\
+No grupo com 1º grau, a média é 7,84 e a mediana é 7,12.\
 No grupo com 2º grau, a média é 11,53 e a mediana é 10,91.\
 No grupo com ensino superior, a média é 16,48 e a mediana é 16,74.\
 O grupo com ensino superior apresenta a maior média.\
