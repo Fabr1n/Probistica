@@ -1,5 +1,5 @@
 ---
-title: "Estatística Descritiva - Questões 6 e 8"
+title: "Atividade Avaliativa - Estatística Descritiva no R"
 author: "Tiago Henrique Silva Fabrini - Matrícula 202604085"
 date: "25 de novembro de 2026"
 output: pdf_document
