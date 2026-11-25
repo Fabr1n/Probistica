@@ -1,14 +1,17 @@
 ---
 title: "Atividade Avaliativa - Estatística Descritiva no R"
-author:
-  - "Tiago Henrique Silva Fabrini - Matrícula 202604085"
-  - "Nome: ______________________________ - Matrícula: ______________"
-  - "Nome: ______________________________ - Matrícula: ______________"
-  - "Nome: ______________________________ - Matrícula: ______________"
-  - "Nome: ______________________________ - Matrícula: ______________"
+author: "Tiago Henrique Silva Fabrini e grupo (5 integrantes)"
 date: "25 de novembro de 2026"
 output: pdf_document
 ---
+
+## Integrantes do grupo
+
+1. Tiago Henrique Silva Fabrini - Matrícula: 202604085
+2. Nome: ______________________________ - Matrícula: ______________
+3. Nome: ______________________________ - Matrícula: ______________
+4. Nome: ______________________________ - Matrícula: ______________
+5. Nome: ______________________________ - Matrícula: ______________
 
 # Questão 6 - Variabilidade dos salários
 
