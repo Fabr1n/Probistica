@@ -58,6 +58,186 @@ names(dados) <- c("funcionario", "estado_civil", "grau_instrucao", "filhos",
                   "salario", "idade_anos", "idade_meses", "regiao")
 dados$grau_instrucao <- as.factor(dados$grau_instrucao)
 ```
+# Questão 1 - Importação, estrutura e classificação das variáveis
+
+### a) Importação do arquivo e seis primeiras observações
+
+```{r}
+# Comando para importação direta do arquivo:
+# dados <- read.table("dados-bussab.txt", header = FALSE)
+
+# Leitura a partir do objeto dados_txt já carregado no relatório
+dados <- read.table(text = paste(dados_txt, collapse = "\n"), header = FALSE)
+
+# Seis primeiras observações
+head(dados, 6)
+```
+
+### b) Número de observações e de variáveis
+
+```{r}
+# Número de observações (linhas)
+nrow(dados)
+
+# Número de variáveis (colunas)
+ncol(dados)
+```
+
+O banco possui 36 observações (funcionários) e 8 colunas (1 identificador e 7 variáveis originais).
+
+### c) Nomes das variáveis e classificação estatística
+
+```{r}
+# Atribuição de nomes às variáveis
+names(dados) <- c("funcionario", "estado_civil", "grau_instrucao", "filhos",
+                  "salario", "idade_anos", "idade_meses", "regiao")
+names(dados)
+```
+
+Classificação quanto à natureza estatística:
+
+- `funcionario`: identificador (número do funcionário).
+- `estado_civil`: qualitativa nominal.
+- `grau_instrucao`: qualitativa ordinal.
+- `filhos`: quantitativa discreta.
+- `salario`: quantitativa contínua.
+- `idade_anos`: quantitativa discreta.
+- `idade_meses`: quantitativa discreta.
+- `regiao`: qualitativa nominal.
+
+### d) Estrutura do banco e conversões para fatores
+
+```{r}
+# Estrutura inicial do banco
+str(dados)
+```
+
+Na importação padrão, as variáveis categóricas entram como texto (`chr`) e o identificador como inteiro (`int`). É necessário converter `estado_civil` e `regiao` para fatores nominais, `grau_instrucao` para fator ordenado (`1oGrau < 2oGrau < Superior`) e `funcionario` para caractere, evitando operações numéricas sobre o identificador.
+
+```{r}
+# Conversões de tipo
+dados$funcionario <- as.character(dados$funcionario)
+dados$estado_civil <- factor(dados$estado_civil)
+dados$grau_instrucao <- factor(dados$grau_instrucao,
+                               levels = c("1oGrau", "2oGrau", "Superior"),
+                               ordered = TRUE)
+dados$regiao <- factor(dados$regiao)
+
+# Estrutura após as conversões
+str(dados)
+```
+
+### e) Colunas de idade e idade em anos com parte fracionária
+
+As colunas `idade_anos` e `idade_meses` separam a idade de cada funcionário em anos completos e meses completos adicionais (de 0 a 11). Para representar a idade em uma única variável contínua em anos com parte fracionária, soma-se `idade_anos` a `idade_meses / 12`.
+
+```{r}
+# Criação da idade em anos com parte fracionária
+dados$idade <- dados$idade_anos + dados$idade_meses / 12
+
+# Seis primeiras observações das colunas de idade
+head(dados[, c("idade_anos", "idade_meses", "idade")], 6)
+```
+
+# Questão 2 - Tabelas de frequências
+
+### a) Tabelas de frequências absolutas e relativas
+
+```{r}
+# Estado civil
+freq_abs_ec <- table(dados$estado_civil)
+freq_rel_ec <- prop.table(freq_abs_ec)
+tabela_ec <- data.frame(
+  Estado_civil = names(freq_abs_ec),
+  Freq_absoluta = as.vector(freq_abs_ec),
+  Freq_relativa = round(as.vector(freq_rel_ec), 4)
+)
+tabela_ec
+
+# Grau de instrução
+freq_abs_gi <- table(dados$grau_instrucao)
+freq_rel_gi <- prop.table(freq_abs_gi)
+tabela_gi <- data.frame(
+  Grau_instrucao = names(freq_abs_gi),
+  Freq_absoluta = as.vector(freq_abs_gi),
+  Freq_relativa = round(as.vector(freq_rel_gi), 4)
+)
+tabela_gi
+
+# Região de procedência
+freq_abs_reg <- table(dados$regiao)
+freq_rel_reg <- prop.table(freq_abs_reg)
+tabela_reg <- data.frame(
+  Regiao = names(freq_abs_reg),
+  Freq_absoluta = as.vector(freq_abs_reg),
+  Freq_relativa = round(as.vector(freq_rel_reg), 4)
+)
+tabela_reg
+```
+
+### b) Frequências relativas em porcentagem
+
+```{r}
+# Estado civil (%)
+tabela_ec_pct <- data.frame(
+  Estado_civil = names(freq_abs_ec),
+  Porcentagem = round(as.vector(freq_rel_ec) * 100, 2)
+)
+tabela_ec_pct
+
+# Grau de instrução (%)
+tabela_gi_pct <- data.frame(
+  Grau_instrucao = names(freq_abs_gi),
+  Porcentagem = round(as.vector(freq_rel_gi) * 100, 2)
+)
+tabela_gi_pct
+
+# Região de procedência (%)
+tabela_reg_pct <- data.frame(
+  Regiao = names(freq_abs_reg),
+  Porcentagem = round(as.vector(freq_rel_reg) * 100, 2)
+)
+tabela_reg_pct
+```
+
+### c) Categoria modal de cada variável
+
+```{r}
+# Moda de Estado civil
+names(which.max(freq_abs_ec))
+
+# Moda de Grau de instrução
+names(which.max(freq_abs_gi))
+
+# Moda de Região de procedência
+names(which.max(freq_abs_reg))
+```
+
+As categorias modais são `casado` para estado civil (20 funcionários; 55,56%), `2oGrau` para grau de instrução (18 funcionários; 50,00%) e `outro` para região de procedência (13 funcionários; 36,11%).
+
+### d) Tabela de frequências para número de filhos e uso de frequências acumuladas
+
+```{r}
+freq_abs_filhos <- table(dados$filhos)
+freq_rel_filhos <- prop.table(freq_abs_filhos)
+
+tabela_filhos <- data.frame(
+  Filhos = as.numeric(names(freq_abs_filhos)),
+  Freq_abs = as.vector(freq_abs_filhos),
+  Freq_rel = round(as.vector(freq_rel_filhos), 4),
+  Porcentagem = round(as.vector(freq_rel_filhos) * 100, 2),
+  Freq_ac_abs = as.vector(cumsum(freq_abs_filhos)),
+  Freq_ac_rel = round(as.vector(cumsum(freq_rel_filhos)), 4),
+  Freq_ac_pct = round(as.vector(cumsum(freq_rel_filhos)) * 100, 2)
+)
+tabela_filhos
+```
+
+Frequências acumuladas não fazem sentido para todas as variáveis desta questão. Elas fazem sentido para `filhos` (quantitativa discreta) e `grau_instrucao` (qualitativa ordinal), que possuem ordenação natural. Não fazem sentido para `estado_civil` e `regiao`, por serem qualitativas nominais sem ordem entre as categorias.
+
+### e) Interpretação da composição dos funcionários
+
+Entre os 36 funcionários, a maioria é casada (55,56%) e 44,44% são solteiros. Quanto à escolaridade, metade tem 2º grau (50,00%), 33,33% têm 1º grau e 16,67% possuem ensino superior. A procedência é equilibrada entre outro (36,11%), interior (33,33%) e capital (30,56%). Quanto ao número de filhos, 55,56% não têm filhos e 88,89% têm até 2 filhos, com apenas um caso de 5 filhos (2,78%).
 
 # Questão 6 - Variabilidade dos salários
 
