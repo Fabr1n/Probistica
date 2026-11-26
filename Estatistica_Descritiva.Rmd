@@ -239,6 +239,88 @@ Frequências acumuladas não fazem sentido para todas as variáveis desta quest�
 
 Entre os 36 funcionários, a maioria é casada (55,56%) e 44,44% são solteiros. Quanto à escolaridade, metade tem 2º grau (50,00%), 33,33% têm 1º grau e 16,67% possuem ensino superior. A procedência é equilibrada entre outro (36,11%), interior (33,33%) e capital (30,56%). Quanto ao número de filhos, 55,56% não têm filhos e 88,89% têm até 2 filhos, com apenas um caso de 5 filhos (2,78%).
 
+# Questão 3 - Distribuição de frequências agrupada em classes (Salário)
+
+### a) Mínimo, máximo e amplitude total
+
+```{r}
+# Mínimo, máximo e amplitude total dos salários
+sal_min <- min(dados$salario)
+sal_max <- max(dados$salario)
+sal_amp <- sal_max - sal_min
+
+sal_min
+sal_max
+sal_amp
+```
+
+O menor salário observado é 4,00 salários mínimos, o maior é 23,30 salários mínimos e a amplitude total é de 19,30 salários mínimos.
+
+### b) Distribuição agrupada em classes e justificativa
+
+```{r}
+# Número de observações e regra de Sturges
+n_sal <- length(dados$salario)
+k_sturges <- 1 + 3.322 * log10(n_sal)
+k_sturges
+
+# Definição de 5 classes de amplitude 4 (de 4 a 24)
+limites <- seq(4, 24, by = 4)
+classes_sal <- cut(dados$salario, breaks = limites,
+                   right = FALSE, include.lowest = TRUE)
+
+# Frequência por classe
+freq_abs_sal <- table(classes_sal)
+freq_abs_sal
+```
+
+Para $n = 36$ observações, tanto a regra da raiz ($\sqrt{36} = 6$) quanto a regra de Sturges ($1 + 3{,}322 \log_{10}(36) \approx 6{,}17$) sugerem inicialmente $k = 6$ classes. Dividindo a amplitude total ($19{,}30$) por $6$, obtém-se $h = 3{,}22$, que, arredondado para o maior inteiro conforme o critério da disciplina, resulta na amplitude $h = 4$ salários mínimos (arredondar para $h = 3$ deixaria o valor máximo `23,30` fora das 6 classes). Partindo do mínimo (`4,00`) com largura $h = 4$, apenas **5 classes** (`[4, 8)`, `[8, 12)`, `[12, 16)`, `[16, 20)` e `[20, 24]`) já abrangem todos os dados até `23,30`; uma eventual 6ª classe (`[24, 28]`) ficaria vazia (frequência zero). Portanto, optou-se por $k = 5$ classes de amplitude $h = 4$, mantendo limites inteiros, nenhuma classe vazia e o mesmo agrupamento clássico de Bussab e Morettin para essa base.
+
+### c) Limites, pontos médios, frequências absolutas, relativas e acumuladas
+
+```{r}
+# Cálculos das medidas da tabela agrupada
+lim_inf <- limites[-length(limites)]
+lim_sup <- limites[-1]
+ponto_medio <- (lim_inf + lim_sup) / 2
+freq_rel_sal <- prop.table(freq_abs_sal)
+
+tabela_salario <- data.frame(
+  Classe = names(freq_abs_sal),
+  Lim_inf = lim_inf,
+  Lim_sup = lim_sup,
+  P_medio = ponto_medio,
+  F_abs = as.vector(freq_abs_sal),
+  F_rel = round(as.vector(freq_rel_sal), 4),
+  Pct = round(as.vector(freq_rel_sal) * 100, 2),
+  FA_abs = as.vector(cumsum(freq_abs_sal)),
+  FA_rel = round(as.vector(cumsum(freq_rel_sal)), 4),
+  FA_pct = round(as.vector(cumsum(freq_rel_sal)) * 100, 2)
+)
+tabela_salario
+```
+
+Observa-se que a classe com maior concentração de funcionários é `[8,12)`, com 12 funcionários (33,33%), seguida por `[4,8)`, com 10 funcionários (27,78%). A partir de 12 salários mínimos a frequência diminui progressivamente até a última faixa (`[20,24]`), com apenas 1 funcionário (2,78%).
+
+### d) Proporção de funcionários nas duas primeiras classes
+
+```{r}
+# Soma das frequências absolutas e relativas das duas primeiras classes
+qtd_duas_primeiras <- sum(freq_abs_sal[1:2])
+prop_duas_primeiras <- round(sum(freq_rel_sal[1:2]), 4)
+pct_duas_primeiras <- round(sum(freq_rel_sal[1:2]) * 100, 2)
+
+qtd_duas_primeiras
+prop_duas_primeiras
+pct_duas_primeiras
+```
+
+Nas duas primeiras classes (`[4, 8)` e `[8, 12)`), concentram-se 22 dos 36 funcionários, o que corresponde a uma proporção de 0,6111 (ou 61,11%).
+
+### e) Informações preservadas e perdidas pelo agrupamento
+
+O agrupamento em classes **preserva** a visão geral da distribuição dos salários, a faixa de variação (entre 4 e 24 salários mínimos), a forma como os dados se concentram nos intervalos (mostrando maior concentração até 12 salários mínimos e redução gradual nas faixas superiores) e as frequências absolutas, relativas e acumuladas por faixa. Por outro lado, **perdem-se** os valores individuais exatos de cada observação dentro das classes: apenas pela tabela agrupada não é possível recuperar o salário específico de cada funcionário, nem os valores exatos do mínimo, do máximo ou da mediana, passando-se a utilizar os pontos médios como representantes de cada intervalo em cálculos aproximados.
+
 # Questão 6 - Variabilidade dos salários
 
 ### a) Amplitude, variância, desvio-padrão e coeficiente de variação
