@@ -321,6 +321,110 @@ Nas duas primeiras classes (`[4, 8)` e `[8, 12)`), concentram-se 22 dos 36 funci
 
 O agrupamento em classes **preserva** a visão geral da distribuição dos salários, a faixa de variação (entre 4 e 24 salários mínimos), a forma como os dados se concentram nos intervalos (mostrando maior concentração até 12 salários mínimos e redução gradual nas faixas superiores) e as frequências absolutas, relativas e acumuladas por faixa. Por outro lado, **perdem-se** os valores individuais exatos de cada observação dentro das classes: apenas pela tabela agrupada não é possível recuperar o salário específico de cada funcionário, nem os valores exatos do mínimo, do máximo ou da mediana, passando-se a utilizar os pontos médios como representantes de cada intervalo em cálculos aproximados.
 
+# Questão 4 - Representações gráficas
+
+### a) Gráfico de barras para grau de instrução
+
+```{r}
+barplot(
+  table(dados$grau_instrucao),
+  main = "Grau de Instrução",
+  xlab = "Grau de Instrução",
+  ylab = "Frequência",
+  col = "lightblue",
+  ylim = c(0, 20),
+  names.arg = c("1º Grau", "2º Grau", "Superior")
+)
+```
+
+Observa-se que o 2º grau é o nível de instrução mais frequente, com 18 funcionários (50,00%), seguido pelo 1º grau, com 12 funcionários (33,33%), e pelo ensino superior, com 6 funcionários (16,67%).
+
+### b) Gráfico de setores para estado civil
+
+```{r}
+freq_ec <- table(dados$estado_civil)
+pct_ec <- prop.table(freq_ec) * 100
+
+pie(
+  freq_ec,
+  main = "Estado Civil",
+  col = c("lightblue", "red"),
+  labels = paste0(
+    names(freq_ec), " - ",
+    round(pct_ec, 2), "%"
+  )
+)
+```
+
+O gráfico demonstra que 55,56% dos funcionários são casados (20 funcionários) e 44,44% são solteiros (16 funcionários). Portanto, há uma predominância de funcionários casados.
+
+### c) Histograma de salário com as classes da Questão 3
+
+```{r}
+hist(
+  dados$salario,
+  breaks = limites,
+  right = FALSE,
+  include.lowest = TRUE,
+  main = "Distribuição de Salários",
+  xlab = "Salário (em salários mínimos)",
+  ylab = "Frequência",
+  col = "lightblue",
+  ylim = c(0, 14),
+  xaxt = "n",
+  yaxt = "n",
+  labels = TRUE
+)
+
+# Definição dos eixos
+axis(1, at = limites)
+axis(2, at = seq(0, 14, by = 2), las = 1)
+```
+
+A maior concentração de funcionários está na classe de 8 a menos de 12 salários mínimos, com 12 funcionários (33,33%). A frequência diminui progressivamente a partir de 12 salários mínimos, indicando uma maior concentração nos salários mais baixos.
+
+### d) Boxplot de salário
+
+```{r}
+boxplot(
+  dados$salario,
+  main = "Distribuição Salarial",
+  ylab = "Salário (em salários mínimos)",
+  col = "lightblue",
+  ylim = c(0, 25),
+  las = 1
+)
+```
+
+O boxplot apresenta uma mediana de aproximadamente 10,17 salários mínimos, com valores variando entre 4,00 e 23,30 salários mínimos. Observa-se maior extensão da distribuição em direção aos salários mais elevados, sem a presença de valores discrepantes (outliers).
+
+### e) Boxplots comparativos de salário por grau de instrução
+
+```{r}
+boxplot(
+  salario ~ grau_instrucao,
+  data = dados,
+  main = "Salário por Grau de Instrução",
+  xlab = "Grau de Instrução",
+  ylab = "Salário (em salários mínimos)",
+  col = c("lightblue", "lightgreen", "pink"),
+  names = c("1º Grau", "2º Grau", "Superior"),
+  ylim = c(0, 25),
+  las = 1
+)
+```
+
+Observa-se que as medianas salariais aumentam conforme o grau de instrução. Os funcionários com 1º grau apresentam mediana de aproximadamente 7,13 salários mínimos, os com 2º grau apresentam mediana de 10,91 e os com ensino superior apresentam mediana de 16,74 salários mínimos.
+
+Os boxplots também permitem comparar a dispersão salarial dentro de cada grupo. Os grupos com 2º grau e ensino superior apresentam maior dispersão dos 50% centrais dos salários em comparação ao grupo com 1º grau.
+
+### Diferença entre gráfico de barras e histograma
+
+O gráfico de barras representa categorias ou valores discretos, sendo as barras geralmente separadas por espaços. A altura de cada barra indica a frequência ou o valor correspondente à categoria.
+
+O histograma representa a distribuição de uma variável quantitativa contínua agrupada em intervalos de classe. Suas barras não são  espaçadas, representando a continuidade dos intervalos. Para classes de mesma amplitude, a altura das barras é proporcional à frequência de cada classe.
+
+
 # Questão 6 - Variabilidade dos salários
 
 ### a) Amplitude, variância, desvio-padrão e coeficiente de variação
